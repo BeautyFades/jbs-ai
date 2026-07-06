@@ -20,7 +20,7 @@ By default the backend runs in **mock mode**: two local MCP servers (same protoc
 
 ## Run it
 
-Prereqs: Python 3.11+ with [uv](https://docs.astral.sh/uv/), Node 20+ with [pnpm](https://pnpm.io/), an `ANTHROPIC_API_KEY`.
+Prereqs: Python 3.11+ with [uv](https://docs.astral.sh/uv/), Node 20+ with [pnpm](https://pnpm.io/), an `ANTHROPIC_API_KEY`. Docker is optional (see below).
 
 ```powershell
 # Backend (terminal 1)
@@ -34,6 +34,21 @@ cd frontend
 pnpm install
 pnpm dev                     # http://localhost:5173 (proxies /api to :8000)
 ```
+
+### Docker (backend)
+
+```powershell
+cd backend
+copy .env.example .env   # set ANTHROPIC_API_KEY
+
+# Production-style (single container, no hot-reload)
+docker compose up --build
+
+# Dev with hot-reload (bind-mounts app/ + mocks/, uvicorn --reload)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+Health check: `curl http://127.0.0.1:8000/api/health`
 
 Sanity checks without the UI:
 
