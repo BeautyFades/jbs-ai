@@ -10,6 +10,13 @@ tool format every provider converts from internally.
 To add a new backend, implement a class with the same methods as
 ClaudeProvider / GeminiProvider / OpenAICompatibleProvider and wire it into
 `create_provider` in `providers/__init__.py`.
+
+Every provider must also implement `export_history() -> list[dict]` and
+`import_history(list[dict]) -> None`: a JSON-serializable snapshot of its
+native conversation history and the inverse. The chat module uses these to
+persist conversations to the operational DB and rehydrate a provider on a
+cold start, so a conversation survives a server restart without the provider
+needing to know anything about the database.
 """
 
 from __future__ import annotations

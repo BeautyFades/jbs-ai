@@ -3,69 +3,49 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
 
-from .agent import run_agent, sse_format
 from .config import settings
-from .host_tools import HOST_TOOLS
+from .db import Base, engine
+from .db import models  # noqa: F401  (import for side effect: register tables)
 from .mcp_host import MCPHost
-from .providers import PROVIDER_NAMES
+from .modules.chat import router as chat_router
+from .modules.platform import router as platform_router
 
 logging.basicConfig(level=logging.INFO)
-
-host = MCPHost()
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Dev/test convenience: create tables from the ORM metadata. Real
+    # environments manage schema with Alembic migrations (see migrations/).
+    if settings.db_create_all:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("DB tables ensured (db_create_all=on)")
+
+    host = MCPHost()
     await host.start(settings.mcp_servers())
-    yield
-    await host.stop()
+    app.state.mcp_host = host
+    try:
+        yield
+    finally:
+        await host.stop()
 
 
-app = FastAPI(title="JBS AI Control Tower PoC", lifespan=lifespan)
+def create_app() -> FastAPI:
+    app = FastAPI(title="JBS AI Control Tower", lifespan=lifespan)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-class ChatRequest(BaseModel):
-    session_id: str
-    message: str
-    # Optional per-request override; falls back to settings.llm_provider.
-    # Only takes effect the first time a given session_id is used — the
-    # provider is fixed for the lifetime of a session (see agent.py).
-    provider: str | None = None
-    model: str | None = None
-
-
-@app.get("/api/health")
-async def health():
-    return {
-        "status": "ok",
-        "mcp_mode": settings.mcp_mode,
-        "mcp_servers": list(host.sessions),
-        "tools": [t["name"] for t in host.tools] + [t["name"] for t in HOST_TOOLS],
-        "default_provider": settings.llm_provider,
-        "available_providers": PROVIDER_NAMES,
-    }
-
-
-@app.post("/api/chat")
-async def chat(req: ChatRequest):
-    async def stream():
-        async for event in run_agent(
-            req.session_id, req.message, host, provider=req.provider, model=req.model
-        ):
-            yield sse_format(event)
-
-    return StreamingResponse(
-        stream(),
-        media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
+
+    app.include_router(platform_router)
+    app.include_router(chat_router)
+    return app
+
+
+app = create_app()

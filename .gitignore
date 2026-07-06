@@ -3,6 +3,11 @@ __pycache__/
 *.pyc
 .venv/
 backend/.env
+.pytest_cache/
+
+# Local dev SQLite databases (operational store defaults to SQLite for dev)
+*.db
+*.db-journal
 
 # Node
 node_modules/

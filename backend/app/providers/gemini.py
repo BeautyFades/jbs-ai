@@ -149,3 +149,10 @@ class GeminiProvider:
     def drop_last_assistant_turn(self) -> None:
         if self._contents and self._contents[-1].role == "model":
             self._contents.pop()
+
+    def export_history(self) -> list[dict]:
+        """Serialize google-genai Content objects to JSON-safe dicts."""
+        return [c.model_dump(mode="json", exclude_none=True) for c in self._contents]
+
+    def import_history(self, history: list[dict]) -> None:
+        self._contents = [types.Content.model_validate(c) for c in history]

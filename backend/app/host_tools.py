@@ -134,7 +134,7 @@ def handle_host_tool(name: str, arguments: dict[str, Any]) -> tuple[str, bool, d
     chart_event = {
         "chart_type": chart_type,
         "title": title if isinstance(title, str) else None,
-        "labels": [str(l) for l in labels],
+        "labels": [str(label) for label in labels],
         "datasets": normalized_datasets,
         "y_axis_label": y_axis_label if isinstance(y_axis_label, str) else None,
     }

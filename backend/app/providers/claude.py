@@ -6,9 +6,13 @@ from typing import AsyncIterator
 
 from anthropic import AsyncAnthropic
 
+from ..config import settings
 from .base import AgentEvent, StopReason, ToolResult, ToolSpec
 
-_client = AsyncAnthropic()
+# Inject the key from settings (loaded from .env) rather than relying solely
+# on the OS environment. Passing None lets the SDK fall back to its own env
+# lookup when the setting is unset.
+_client = AsyncAnthropic(api_key=settings.anthropic_api_key or None)
 
 
 class ClaudeProvider:
@@ -48,7 +52,19 @@ class ClaudeProvider:
             self.error_message = f"{type(exc).__name__}: {exc}"
             return
 
-        self._messages.append({"role": "assistant", "content": response.content})
+        # Store the assistant turn as plain dicts (not pydantic blocks) so the
+        # history is JSON-serializable for persistence and still valid as API
+        # input on the next request. exclude_none keeps optional block fields
+        # (e.g. thinking signatures round-trip; empty fields are dropped).
+        self._messages.append(
+            {
+                "role": "assistant",
+                "content": [
+                    block.model_dump(mode="json", exclude_none=True)
+                    for block in response.content
+                ],
+            }
+        )
 
         if response.stop_reason == "refusal":
             self.stop_reason = "refusal"
@@ -92,3 +108,11 @@ class ClaudeProvider:
         turn so the stored history stays API-valid for the next request."""
         if self._messages and self._messages[-1]["role"] == "assistant":
             self._messages.pop()
+
+    def export_history(self) -> list[dict]:
+        """JSON-serializable snapshot of native messages, for persistence."""
+        return self._messages
+
+    def import_history(self, history: list[dict]) -> None:
+        """Rehydrate native messages from a persisted snapshot (cold start)."""
+        self._messages = list(history)

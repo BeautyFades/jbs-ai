@@ -124,3 +124,10 @@ class OpenAICompatibleProvider:
     def drop_last_assistant_turn(self) -> None:
         if self._messages and self._messages[-1]["role"] == "assistant":
             self._messages.pop()
+
+    def export_history(self) -> list[dict]:
+        """Native messages are already plain dicts — return as-is."""
+        return self._messages
+
+    def import_history(self, history: list[dict]) -> None:
+        self._messages = list(history)

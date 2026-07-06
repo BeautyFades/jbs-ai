@@ -15,8 +15,25 @@ class Settings(BaseSettings):
     llm_provider: Literal["claude", "gemini", "openai", "local"] = "claude"
     mcp_mode: Literal["mock", "real"] = "mock"
 
+    # --- Operational database (PostgreSQL) ---
+    # Points at the bundled compose Postgres by default; override DATABASE_URL
+    # per environment. Async driver (asyncpg) is required.
+    database_url: str = "postgresql+asyncpg://jbs:jbs@localhost:5432/jbs_ai"
+    # Create tables from ORM metadata on startup (dev/test). Turn OFF in
+    # environments where Alembic migrations own the schema.
+    db_create_all: bool = True
+
+    # Comma-separated allowed CORS origins (frontend dev server by default).
+    cors_origins: list[str] = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
+
     # Claude
     anthropic_model: str = "claude-opus-4-8"
+    # Read from .env/settings and injected into the client, so the key does
+    # not have to be exported into the OS environment separately.
+    anthropic_api_key: str = ""
 
     # Gemini (Google AI Studio key by default; set GOOGLE_GENAI_USE_VERTEXAI=true
     # + GOOGLE_CLOUD_PROJECT/GOOGLE_CLOUD_LOCATION env vars to use Vertex AI instead)

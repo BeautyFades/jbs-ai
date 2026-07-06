@@ -11,7 +11,6 @@ from typing import Any, AsyncIterator
 
 from .host_tools import HOST_TOOLS, handle_host_tool, is_host_tool
 from .mcp_host import MCPHost
-from .providers import create_provider
 from .providers.base import ToolResult
 
 MAX_AGENT_TURNS = 12
@@ -40,31 +39,18 @@ If a query fails, read the error, fix the SQL, and retry. If the question is not
 answerable from the available models, say so and list what is available.
 """
 
-# PoC-only in-memory session store: session_id -> provider instance.
-# The provider is fixed at session creation — switching mid-conversation
-# would require translating history between providers' native formats,
-# which isn't attempted here. Start a new session_id to change providers.
-_sessions: dict[str, Any] = {}
-
-
-def _get_or_create_session(session_id: str, provider: str | None, model: str | None):
-    existing = _sessions.get(session_id)
-    if existing is not None:
-        return existing
-    instance = create_provider(provider, model)
-    _sessions[session_id] = instance
-    return instance
-
-
 async def run_agent(
-    session_id: str,
+    llm: Any,
     user_message: str,
     host: MCPHost,
-    provider: str | None = None,
-    model: str | None = None,
 ) -> AsyncIterator[dict[str, Any]]:
-    """Yields events: text_delta, tool_call, tool_result, done, error."""
-    llm = _get_or_create_session(session_id, provider, model)
+    """Drive one user turn to completion against an already-constructed
+    provider instance, yielding events: text_delta, tool_call, tool_result,
+    chart, done, error.
+
+    Session lifecycle and persistence (creating/rehydrating the provider,
+    saving the exchange) are owned by the chat module's service — this
+    function is pure agent orchestration over whatever provider it's given."""
     llm.add_user_message(user_message)
 
     tools = host.tools + HOST_TOOLS
