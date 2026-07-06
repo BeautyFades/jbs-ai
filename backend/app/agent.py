@@ -9,6 +9,7 @@ is deciding when to call which tool."""
 import json
 from typing import Any, AsyncIterator
 
+from .host_tools import HOST_TOOLS, handle_host_tool, is_host_tool
 from .mcp_host import MCPHost
 from .providers import create_provider
 from .providers.base import ToolResult
@@ -30,6 +31,10 @@ cap exploratory queries with LIMIT.
 3. Answer: give the business answer first in one or two sentences, then a compact \
 markdown table of the key figures, then any caveats. Format currency and volumes \
 readably (e.g. $1.2M, 45k lbs). Do not dump raw JSON at the user.
+4. Visualize: when the user asks for a chart/graph/plot, or a trend is easier to \
+see visually, call render_chart with labels and dataset values from your query. \
+Never paste Chart.js JSON in the text — use render_chart instead. Still include \
+the key figures in prose or a table.
 
 If a query fails, read the error, fix the SQL, and retry. If the question is not \
 answerable from the available models, say so and list what is available.
@@ -62,9 +67,11 @@ async def run_agent(
     llm = _get_or_create_session(session_id, provider, model)
     llm.add_user_message(user_message)
 
+    tools = host.tools + HOST_TOOLS
+
     try:
         for _ in range(MAX_AGENT_TURNS):
-            async for event in llm.run_turn(SYSTEM_PROMPT, host.tools):
+            async for event in llm.run_turn(SYSTEM_PROMPT, tools):
                 if event.type == "text_delta":
                     yield {"type": "text_delta", "text": event.text}
                 elif event.type == "tool_call":
@@ -88,7 +95,18 @@ async def run_agent(
 
             tool_results: list[ToolResult] = []
             for call in llm.pending_tool_calls:
-                content, is_error = await host.call_tool(call["name"], call["input"])
+                if is_host_tool(call["name"]):
+                    content, is_error, chart_payload = handle_host_tool(
+                        call["name"], call["input"]
+                    )
+                    if chart_payload is not None:
+                        yield {
+                            "type": "chart",
+                            "id": call["id"],
+                            **chart_payload,
+                        }
+                else:
+                    content, is_error = await host.call_tool(call["name"], call["input"])
                 yield {
                     "type": "tool_result",
                     "id": call["id"],

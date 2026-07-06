@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { marked } from "marked";
 import { getHealth, streamChat } from "./api";
+import { ChartCard } from "./components/ChartCard";
 import { ToolCard } from "./components/ToolCard";
 import type { AssistantPart, ChatItem } from "./types";
 
@@ -95,6 +96,19 @@ export default function App() {
                 : p,
             ),
           );
+        } else if (ev.type === "chart") {
+          updateParts((parts) => [
+            ...parts,
+            {
+              kind: "chart",
+              id: ev.id,
+              chartType: ev.chart_type,
+              title: ev.title,
+              labels: ev.labels,
+              datasets: ev.datasets,
+              yAxisLabel: ev.y_axis_label,
+            },
+          ]);
         } else if (ev.type === "error") {
           setItems((prev) => [...prev, { role: "system", text: ev.message }]);
         }
@@ -164,19 +178,26 @@ export default function App() {
           }
           return (
             <div key={i} className="msg assistant">
-              {item.parts.map((part, j) =>
-                part.kind === "text" ? (
-                  <div
-                    key={j}
-                    className="markdown"
-                    dangerouslySetInnerHTML={{
-                      __html: marked.parse(part.text) as string,
-                    }}
-                  />
-                ) : (
-                  <ToolCard key={part.id} part={part} />
-                ),
-              )}
+              {item.parts.map((part, j) => {
+                if (part.kind === "text") {
+                  return (
+                    <div
+                      key={j}
+                      className="markdown"
+                      dangerouslySetInnerHTML={{
+                        __html: marked.parse(part.text) as string,
+                      }}
+                    />
+                  );
+                }
+                if (part.kind === "chart") {
+                  return <ChartCard key={part.id} part={part} />;
+                }
+                if (part.name === "render_chart") {
+                  return null;
+                }
+                return <ToolCard key={part.id} part={part} />;
+              })}
               {busy && i === items.length - 1 && item.parts.length === 0 && (
                 <div className="thinking">thinking…</div>
               )}

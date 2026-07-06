@@ -76,6 +76,14 @@ main { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: 
 .table-wrap th { background: #0c1014; position: sticky; top: 0; }
 .table-note { color: var(--muted); font-size: 11px; margin-top: 4px; }
 
+.chart-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 100%;
+}
+
 footer { padding: 14px 20px; border-top: 1px solid var(--border); }
 footer form { display: flex; gap: 10px; }
 footer input {

@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from .agent import run_agent, sse_format
 from .config import settings
+from .host_tools import HOST_TOOLS
 from .mcp_host import MCPHost
 from .providers import PROVIDER_NAMES
 
@@ -49,7 +50,7 @@ async def health():
         "status": "ok",
         "mcp_mode": settings.mcp_mode,
         "mcp_servers": list(host.sessions),
-        "tools": [t["name"] for t in host.tools],
+        "tools": [t["name"] for t in host.tools] + [t["name"] for t in HOST_TOOLS],
         "default_provider": settings.llm_provider,
         "available_providers": PROVIDER_NAMES,
     }

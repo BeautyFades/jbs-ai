@@ -8,8 +8,37 @@ export type AgentEvent =
       content: string;
       is_error: boolean;
     }
+  | {
+      type: "chart";
+      id: string;
+      chart_type: "line" | "bar" | "pie" | "doughnut" | "scatter";
+      title?: string | null;
+      labels: string[];
+      datasets: ChartDataset[];
+      y_axis_label?: string | null;
+    }
   | { type: "error"; message: string }
   | { type: "done" };
+
+export type ChartDataset = {
+  label: string;
+  data: number[];
+  borderColor?: string;
+  backgroundColor?: string | string[];
+  fill?: boolean;
+  tension?: number;
+  borderWidth?: number;
+};
+
+export type ChartPart = {
+  kind: "chart";
+  id: string;
+  chartType: "line" | "bar" | "pie" | "doughnut" | "scatter";
+  title?: string | null;
+  labels: string[];
+  datasets: ChartDataset[];
+  yAxisLabel?: string | null;
+};
 
 export type ToolPart = {
   kind: "tool";
@@ -22,7 +51,7 @@ export type ToolPart = {
 
 export type TextPart = { kind: "text"; text: string };
 
-export type AssistantPart = TextPart | ToolPart;
+export type AssistantPart = TextPart | ToolPart | ChartPart;
 
 export type ChatItem =
   | { role: "user"; text: string }
