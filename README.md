@@ -30,10 +30,13 @@ uv sync
 uv run uvicorn app.main:app --port 8000
 
 # Frontend (terminal 2)
+pnpm install                 # repo root: installs git hooks (husky)
 cd frontend
 pnpm install
 pnpm dev                     # http://localhost:5173 (proxies /api to :8000)
 ```
+
+Frontend stack, structure and conventions: see [frontend/README.md](frontend/README.md).
 
 ### Docker (backend)
 
@@ -71,7 +74,8 @@ backend/
   app/main.py        # FastAPI app, /api/chat (SSE), /api/health
   mocks/             # mock dbt + Snowflake MCP servers (DuckDB, seeded data)
   scripts/smoke_mcp.py
-frontend/            # Vite + React + TS chat UI (SSE client, tool cards, tables)
+frontend/            # React 19 + Vite SPA: TanStack Router/Query, Tailwind + shadcn,
+                     # feature folders, AI assistant on every screen (see its README)
 docs/ARCHITECTURE.md # stack evaluation and target architecture
 ```
 

@@ -1,3 +1,4 @@
+/** Server-sent events streamed from the agent backend (`POST /api/chat`). */
 export type AgentEvent =
   | { type: "text_delta"; text: string }
   | { type: "tool_call"; id: string; name: string; input: Record<string, unknown> }
@@ -11,14 +12,28 @@ export type AgentEvent =
   | {
       type: "chart";
       id: string;
-      chart_type: "line" | "bar" | "pie" | "doughnut" | "scatter";
+      chart_type: ChartType;
       title?: string | null;
       labels: string[];
       datasets: ChartDataset[];
       y_axis_label?: string | null;
     }
+  | {
+      /**
+       * A tool the agent wants executed *in the browser* (navigation, opening a
+       * report, creating a task from the current screen…). Resolved against the
+       * client tool registry — see `tool-registry.tsx`. Not emitted by the
+       * backend yet; the frontend plumbing is already in place.
+       */
+      type: "client_tool_call";
+      id: string;
+      name: string;
+      input: Record<string, unknown>;
+    }
   | { type: "error"; message: string }
   | { type: "done" };
+
+export type ChartType = "line" | "bar" | "pie" | "doughnut" | "scatter";
 
 export type ChartDataset = {
   label: string;
@@ -33,7 +48,7 @@ export type ChartDataset = {
 export type ChartPart = {
   kind: "chart";
   id: string;
-  chartType: "line" | "bar" | "pie" | "doughnut" | "scatter";
+  chartType: ChartType;
   title?: string | null;
   labels: string[];
   datasets: ChartDataset[];

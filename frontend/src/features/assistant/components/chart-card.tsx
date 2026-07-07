@@ -11,7 +11,8 @@ import {
   Tooltip,
 } from "chart.js";
 import { Bar, Doughnut, Line, Pie } from "react-chartjs-2";
-import type { ChartPart } from "../types";
+
+import type { ChartPart } from "@/ai/types";
 
 ChartJS.register(
   CategoryScale,
@@ -27,6 +28,7 @@ ChartJS.register(
 
 const GRID = "rgba(139, 152, 165, 0.2)";
 const TICK = "#8b98a5";
+const TEXT = "#e6ebf0";
 
 function baseData(part: ChartPart) {
   return {
@@ -45,11 +47,11 @@ function cartesianOptions(part: ChartPart) {
     maintainAspectRatio: true,
     aspectRatio: 2.2,
     plugins: {
-      legend: { labels: { color: "#e6ebf0" } },
+      legend: { labels: { color: TEXT } },
       title: {
         display: Boolean(part.title),
         text: part.title ?? "",
-        color: "#e6ebf0",
+        color: TEXT,
         font: { size: 14 },
       },
     },
@@ -78,11 +80,11 @@ function radialOptions(part: ChartPart) {
     maintainAspectRatio: true,
     aspectRatio: 1.6,
     plugins: {
-      legend: { labels: { color: "#e6ebf0" } },
+      legend: { labels: { color: TEXT } },
       title: {
         display: Boolean(part.title),
         text: part.title ?? "",
-        color: "#e6ebf0",
+        color: TEXT,
         font: { size: 14 },
       },
     },
@@ -93,7 +95,7 @@ export function ChartCard({ part }: { part: ChartPart }) {
   const data = baseData(part);
 
   return (
-    <div className="chart-card">
+    <div className="my-2 rounded-lg border bg-card p-3">
       {part.chartType === "bar" && <Bar data={data} options={cartesianOptions(part)} />}
       {part.chartType === "pie" && <Pie data={data} options={radialOptions(part)} />}
       {part.chartType === "doughnut" && (
