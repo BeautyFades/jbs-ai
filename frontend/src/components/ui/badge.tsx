@@ -13,6 +13,15 @@ const badgeVariants = cva(
         secondary: "border-transparent bg-secondary text-secondary-foreground",
         destructive: "border-transparent bg-destructive text-destructive-foreground",
         outline: "text-foreground",
+        success: "border-transparent bg-success text-success-foreground",
+        warning: "border-transparent bg-warning text-warning-foreground",
+        info: "border-transparent bg-info text-info-foreground",
+        /* Soft variants: tinted background, colored text — for dense tables */
+        "success-soft": "border-success/25 bg-success/10 text-success",
+        "warning-soft":
+          "border-warning/40 bg-warning/15 text-warning-foreground dark:text-warning",
+        "danger-soft": "border-destructive/25 bg-destructive/10 text-destructive",
+        "info-soft": "border-info/25 bg-info/10 text-info",
       },
     },
     defaultVariants: {

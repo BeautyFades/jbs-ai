@@ -5,6 +5,8 @@ import ReactDOM from "react-dom/client";
 
 import { AssistantProvider } from "@/ai/assistant-provider";
 import { AiToolRegistryProvider } from "@/ai/tool-registry";
+import { ThemeProvider } from "@/components/theme/theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { queryClient } from "@/lib/query-client";
 
 import { routeTree } from "./routeTree.gen";
@@ -24,12 +26,16 @@ declare module "@tanstack/react-router" {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AiToolRegistryProvider>
-        <AssistantProvider>
-          <RouterProvider router={router} />
-        </AssistantProvider>
-      </AiToolRegistryProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <TooltipProvider>
+        <QueryClientProvider client={queryClient}>
+          <AiToolRegistryProvider>
+            <AssistantProvider>
+              <RouterProvider router={router} />
+            </AssistantProvider>
+          </AiToolRegistryProvider>
+        </QueryClientProvider>
+      </TooltipProvider>
+    </ThemeProvider>
   </StrictMode>,
 );

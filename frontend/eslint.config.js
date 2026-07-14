@@ -34,8 +34,14 @@ export default tseslint.config(
   {
     // Files whose mixed exports are framework conventions, not accidents:
     // route modules (`Route` + page component), AI infra (provider + hooks),
-    // and shadcn/ui primitives (component + cva variants).
-    files: ["src/routes/**/*.tsx", "src/ai/**/*.tsx", "src/components/ui/**/*.tsx"],
+    // shadcn/ui primitives (component + cva variants), and the theme
+    // provider (provider + useTheme hook).
+    files: [
+      "src/routes/**/*.tsx",
+      "src/ai/**/*.tsx",
+      "src/components/ui/**/*.tsx",
+      "src/components/theme/**/*.tsx",
+    ],
     rules: {
       "react-refresh/only-export-components": "off",
     },

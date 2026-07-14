@@ -3,6 +3,9 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { useAiTool } from "@/ai/tool-registry";
 import { useCurrentUser } from "@/auth";
+import { AppMenu } from "@/components/layout/app-menu";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { Toaster } from "@/components/ui/sonner";
 import { AssistantDock } from "@/features/assistant";
 import { cn } from "@/lib/utils";
 import { TOWER_LIST } from "@/towers";
@@ -15,6 +18,7 @@ const NAV_LINKS = [
   { to: "/", label: "Home" },
   ...TOWER_LIST.map((t) => ({ to: t.basePath, label: t.shortName })),
   { to: "/assistant", label: "AI Assistant" },
+  { to: "/design", label: "Design" },
 ] as const;
 
 function RootLayout() {
@@ -41,7 +45,8 @@ function RootLayout() {
   return (
     <div className="flex min-h-svh flex-col">
       <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-        <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-6 px-4">
+        <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-3 px-4">
+          <AppMenu />
           <Link to="/" className="flex items-baseline gap-2">
             <span className="font-semibold tracking-tight">JBS AI Control Tower</span>
             <span className="hidden text-xs text-muted-foreground sm:inline">
@@ -70,6 +75,7 @@ function RootLayout() {
                 {user.name}
               </span>
             )}
+            <ThemeToggle className="ml-1" />
           </nav>
         </div>
       </header>
@@ -77,6 +83,7 @@ function RootLayout() {
       <Outlet />
 
       <AssistantDock />
+      <Toaster position="bottom-right" />
 
       {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-left" />}
     </div>
