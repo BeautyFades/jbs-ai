@@ -13,6 +13,9 @@ backend/.env
 node_modules/
 frontend/dist/
 
+# TanStack Router generated cache
+frontend/.tanstack/
+
 # Misc
 .DS_Store
 *.log
