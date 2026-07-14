@@ -48,12 +48,24 @@
   --info: oklch(0.55 0.11 240);
   --info-foreground: oklch(0.985 0.002 247);
 
-  /* Charts */
-  --chart-1: oklch(0.45 0.1 251); /* brand blue */
-  --chart-2: oklch(0.55 0.19 22); /* brand red */
-  --chart-3: oklch(0.7 0.11 195); /* teal */
-  --chart-4: oklch(0.75 0.14 78); /* amber */
-  --chart-5: oklch(0.55 0.12 152); /* green */
+  /*
+   * Charts — categorical identity palette (8 fixed hues, assigned in
+   * order, never cycled). Validated with the dataviz skill's
+   * validate_palette.js against this surface (card #ffffff): lightness
+   * band, chroma floor, CVD separation (worst adjacent ΔE 34.2), and
+   * contrast (teal/amber WARN below 3:1 — mitigated by the always-on
+   * legend + tooltip, per the skill's relief rule). Re-run the validator
+   * before changing any of these eight.
+   */
+  --chart-1: #2f6da8; /* blue (brand) */
+  --chart-2: #2cb3b3; /* teal */
+  --chart-3: #dea132; /* amber */
+  --chart-4: #2e854d; /* green */
+  --chart-5: #7c5cd1; /* violet */
+  --chart-6: #d1574a; /* red — deliberately distinct from --destructive so a
+                          categorical series never impersonates status */
+  --chart-7: #c94f8a; /* magenta */
+  --chart-8: #d97a2f; /* orange */
 }
 
 .dark {
@@ -88,11 +100,16 @@
   --info: oklch(0.66 0.11 240);
   --info-foreground: oklch(0.15 0.03 240);
 
-  --chart-1: oklch(0.62 0.11 248);
-  --chart-2: oklch(0.64 0.18 22);
-  --chart-3: oklch(0.72 0.11 195);
-  --chart-4: oklch(0.78 0.14 78);
-  --chart-5: oklch(0.66 0.12 152);
+  /* Charts — same eight hues, re-stepped for the dark card (#101720):
+     worst adjacent ΔE 32.5, all ≥3:1. */
+  --chart-1: #5a94d6;
+  --chart-2: #00a79c;
+  --chart-3: #bc8600;
+  --chart-4: #4da669;
+  --chart-5: #947de2;
+  --chart-6: #d76d60;
+  --chart-7: #ce6a9b;
+  --chart-8: #ca7b30;
 }
 
 /*
@@ -159,6 +176,9 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --color-chart-7: var(--chart-7);
+  --color-chart-8: var(--chart-8);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

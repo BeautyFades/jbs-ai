@@ -29,6 +29,16 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import {
+  BarChart,
+  ChartDataTable,
+  DoughnutChart,
+  groupIntoOthers,
+  LineChart,
+  PieChart,
+  RadarChart,
+  ScatterChart,
+} from "@/components/ui/chart";
 import { Combobox, MultiCombobox } from "@/components/ui/combobox";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { DateRangePicker, type DateRange } from "@/components/ui/date-range-picker";
@@ -494,15 +504,129 @@ function DesignPage() {
             </ChartCardAction>
           </ChartCardHeader>
           <ChartCardContent>
-            <div className="grid h-48 place-items-center rounded-lg border border-dashed text-sm text-muted-foreground">
-              Chart renders here (chart.js / react-chartjs-2)
-            </div>
+            <BarChart labels={WEEKS} series={[{ label: "Cases", data: WEEKLY_CASES }]} />
+            <ChartDataTable
+              className="mt-2"
+              labels={WEEKS}
+              series={[{ label: "Cases", data: WEEKLY_CASES }]}
+            />
           </ChartCardContent>
           <ChartCardFooter>
             <span>Source: Snowflake · fct_shipments</span>
             <span>Refreshed 5 min ago</span>
           </ChartCardFooter>
         </ChartCard>
+      </Section>
+
+      <Section title="Charts">
+        <Muted>
+          Chart.js + react-chartjs-2, themed to the 8-slot categorical palette validated
+          against both surfaces (see globals.css). Colors are assigned by fixed slot order
+          — never hand-picked per chart.
+        </Muted>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <ChartCard>
+            <ChartCardHeader>
+              <div className="flex flex-col gap-1">
+                <ChartCardTitle>Volume by plant</ChartCardTitle>
+                <ChartCardSubtitle>Grouped bar, 3 series</ChartCardSubtitle>
+              </div>
+            </ChartCardHeader>
+            <ChartCardContent>
+              <BarChart
+                labels={PLANTS.slice(0, 5)}
+                series={PLANT_SERIES}
+                yLabel="Cases"
+              />
+            </ChartCardContent>
+          </ChartCard>
+
+          <ChartCard>
+            <ChartCardHeader>
+              <div className="flex flex-col gap-1">
+                <ChartCardTitle>Fill rate trend</ChartCardTitle>
+                <ChartCardSubtitle>Area chart, single series</ChartCardSubtitle>
+              </div>
+            </ChartCardHeader>
+            <ChartCardContent>
+              <LineChart
+                labels={WEEKS}
+                series={[{ label: "Fill rate", data: FILL_RATE }]}
+                area
+              />
+            </ChartCardContent>
+          </ChartCard>
+
+          <ChartCard>
+            <ChartCardHeader>
+              <div className="flex flex-col gap-1">
+                <ChartCardTitle>Orders by customer</ChartCardTitle>
+                <ChartCardSubtitle>Pie, top 5 + Other</ChartCardSubtitle>
+              </div>
+            </ChartCardHeader>
+            <ChartCardContent>
+              <PieChart
+                labels={customerSlices.map((s) => s.label)}
+                data={customerSlices.map((s) => s.value)}
+              />
+            </ChartCardContent>
+          </ChartCard>
+
+          <ChartCard>
+            <ChartCardHeader>
+              <div className="flex flex-col gap-1">
+                <ChartCardTitle>Case mix</ChartCardTitle>
+                <ChartCardSubtitle>Doughnut, with center total</ChartCardSubtitle>
+              </div>
+            </ChartCardHeader>
+            <ChartCardContent>
+              <DoughnutChart
+                labels={PLANTS.slice(0, 4)}
+                data={[820, 640, 510, 390]}
+                centerLabel={
+                  <div className="text-center">
+                    <div className="text-xl font-bold tabular-nums">2,360</div>
+                    <div className="text-xs text-muted-foreground">total cases</div>
+                  </div>
+                }
+              />
+            </ChartCardContent>
+          </ChartCard>
+
+          <ChartCard>
+            <ChartCardHeader>
+              <div className="flex flex-col gap-1">
+                <ChartCardTitle>Plant scorecard</ChartCardTitle>
+                <ChartCardSubtitle>Radar, 2 series</ChartCardSubtitle>
+              </div>
+            </ChartCardHeader>
+            <ChartCardContent>
+              <RadarChart
+                labels={["Fill rate", "On-time", "Quality", "Cost", "Safety"]}
+                series={[
+                  { label: "Mt. Pleasant", data: [92, 88, 95, 74, 90] },
+                  { label: "Sanford", data: [85, 91, 88, 82, 86] },
+                ]}
+              />
+            </ChartCardContent>
+          </ChartCard>
+
+          <ChartCard>
+            <ChartCardHeader>
+              <div className="flex flex-col gap-1">
+                <ChartCardTitle>Cost vs. cases</ChartCardTitle>
+                <ChartCardSubtitle>Scatter, one series</ChartCardSubtitle>
+              </div>
+            </ChartCardHeader>
+            <ChartCardContent>
+              <ScatterChart
+                series={[{ label: "Orders", data: scatterPoints }]}
+                xLabel="Cases"
+                yLabel="Freight cost ($)"
+              />
+            </ChartCardContent>
+          </ChartCard>
+        </div>
       </Section>
 
       <Section title="Data table">
@@ -604,6 +728,35 @@ const STATUS_BADGE: Record<Order["status"], React.ReactNode> = {
 const PLANTS = ["Mt. Pleasant", "Sanford", "Lufkin", "Waco", "Athens"];
 const CUSTOMERS = ["Walmart", "Kroger", "Costco", "US Foods", "Sysco", "HEB"];
 const STATUSES: Order["status"][] = ["on-track", "at-risk", "late", "delivered"];
+
+const WEEKS = ["Wk 1", "Wk 2", "Wk 3", "Wk 4", "Wk 5", "Wk 6", "Wk 7", "Wk 8"];
+const WEEKLY_CASES = [3120, 3340, 2980, 3510, 3690, 3405, 3820, 3960];
+const FILL_RATE = [94.2, 95.1, 93.8, 96.4, 97.0, 95.8, 96.9, 96.8];
+const PLANT_SERIES = [
+  { label: "This year", data: [1240, 980, 860, 720, 610] },
+  { label: "Last year", data: [1080, 1020, 790, 680, 640] },
+];
+
+const CUSTOMER_VOLUMES = [
+  { name: "Walmart", cases: 4820 },
+  { name: "Kroger", cases: 3160 },
+  { name: "Costco", cases: 2540 },
+  { name: "US Foods", cases: 1890 },
+  { name: "Sysco", cases: 1420 },
+  { name: "HEB", cases: 980 },
+  { name: "Publix", cases: 640 },
+  { name: "Meijer", cases: 410 },
+];
+const customerSlices = groupIntoOthers(CUSTOMER_VOLUMES, {
+  max: 5,
+  getLabel: (c) => c.name,
+  getValue: (c) => c.cases,
+});
+
+const scatterPoints = Array.from({ length: 16 }, (_, i) => ({
+  x: 300 + i * 210 + ((i * 47) % 90),
+  y: 420 + i * 38 + ((i * 73) % 160),
+}));
 
 function makeOrders(): Order[] {
   return Array.from({ length: 57 }, (_, i) => ({
