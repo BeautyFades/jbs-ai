@@ -11,6 +11,7 @@ from .mcp_host import MCPHost
 from .modules.auth import require_user
 from .modules.auth import router as auth_router
 from .modules.chat import router as chat_router
+from .modules.data import router as data_router
 from .modules.platform import router as platform_router
 from .modules.towers.router import router as towers_router
 
@@ -50,6 +51,7 @@ def create_app() -> FastAPI:
     app.include_router(platform_router)
     app.include_router(auth_router)
     app.include_router(towers_router)
+    app.include_router(data_router)
     app.include_router(chat_router, dependencies=[Depends(require_user)])
     return app
 

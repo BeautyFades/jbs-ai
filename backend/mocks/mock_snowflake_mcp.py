@@ -51,9 +51,14 @@ def _normalize(sql: str) -> str:
 
 
 @mcp.tool()
-def run_query(query: str) -> str:
+def run_query(
+    query: str, role: str | None = None, query_tag: str | dict | None = None
+) -> str:
     """Execute a SQL query against Snowflake and return the result rows as JSON.
-    Read-only SELECT statements only. Results are capped at 200 rows."""
+    Read-only SELECT statements only. Results are capped at 200 rows.
+
+    role/query_tag mirror the real server contract (USE ROLE + QUERY_TAG for
+    per-user RLS and auditing); the mock accepts and ignores them."""
     stripped = query.strip().rstrip(";").strip()
     if not stripped.lower().startswith(("select", "with", "show", "describe")):
         return json.dumps({"error": "Only read-only SELECT queries are allowed."})

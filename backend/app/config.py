@@ -16,12 +16,38 @@ class Settings(BaseSettings):
     mcp_mode: Literal["mock", "real"] = "mock"
 
     # --- Auth ---
-    # "dev" injects a local user with the roles below; "entra" requires Azure
-    # EasyAuth headers (X-MS-CLIENT-PRINCIPAL) and rejects anonymous requests.
-    auth_mode: Literal["dev", "entra"] = "dev"
+    # "dev"        injects a local user with the roles below (no login).
+    # "entra"      trusts Azure EasyAuth headers (X-MS-CLIENT-PRINCIPAL) —
+    #              only valid when the app sits behind App Service auth.
+    # "entra_oidc" self-hosted OAuth2 auth-code flow against Entra ID (BFF
+    #              pattern): the backend exchanges the code and issues a
+    #              signed httpOnly session cookie; no tokens reach the SPA.
+    auth_mode: Literal["dev", "entra", "entra_oidc"] = "dev"
     dev_user_email: str = "dev@jbs.com.br"
     dev_user_name: str = "Dev User"
     dev_user_roles: list[str] = ["admin"]
+
+    # Entra ID app registration (entra_oidc mode).
+    entra_tenant_id: str = ""
+    entra_client_id: str = ""
+    entra_client_secret: str = ""
+    # Must be registered as a Web redirect URI on the app registration.
+    entra_redirect_uri: str = "http://localhost:8000/api/auth/callback"
+    # SPA origin to land on after login/logout. In dev the SPA and API run on
+    # different ports; in production they share an origin and this can be "".
+    frontend_base_url: str = "http://localhost:5173"
+
+    # Session cookie signing key — REQUIRED in entra_oidc mode. Rotating it
+    # invalidates every active session.
+    session_secret: str = ""
+    session_cookie_name: str = "jbs_session"
+    session_max_age_seconds: int = 8 * 3600  # one working day
+    # Set true when serving over HTTPS (always, outside local dev).
+    session_cookie_secure: bool = False
+
+    @property
+    def entra_authority(self) -> str:
+        return f"https://login.microsoftonline.com/{self.entra_tenant_id}"
 
     # --- Operational database (PostgreSQL) ---
     # Points at the bundled compose Postgres by default; override DATABASE_URL
@@ -69,6 +95,20 @@ class Settings(BaseSettings):
     # Snowflake MCP (real mode)
     snowflake_mcp_config: str = ""
     snowflake_connection_name: str = "default"
+
+    # --- Snowflake row-level security ---
+    # App role -> Snowflake functional role. Queries for a user run under the
+    # most-privileged Snowflake role their app roles map to; Snowflake's
+    # grants + row access policies do the actual enforcement. JSON in env,
+    # e.g. SNOWFLAKE_ROLE_MAP='{"admin":"CT_ADMIN","sales.user":"CT_SALES"}'
+    snowflake_role_map: dict[str, str] = {
+        "admin": "CT_ADMIN_R",
+        "live.user": "CT_LIVE_R",
+        "plant.user": "CT_PLANT_R",
+        "sales.user": "CT_SALES_R",
+    }
+    # Hard cap on rows returned to the SPA per query.
+    query_max_rows: int = 10_000
 
     def mcp_servers(self) -> dict[str, dict]:
         """Server name -> stdio launch spec. Names become tool prefixes."""

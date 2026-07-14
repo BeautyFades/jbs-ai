@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as DesignRouteImport } from './routes/design'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as SalesRouteRouteImport } from './routes/sales/route'
@@ -25,6 +26,11 @@ import { Route as PlantAiRouteImport } from './routes/plant/ai'
 import { Route as LiveReportsRouteImport } from './routes/live/reports'
 import { Route as LiveAiRouteImport } from './routes/live/ai'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DesignRoute = DesignRouteImport.update({
   id: '/design',
   path: '/design',
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/sales': typeof SalesRouteRouteWithChildren
   '/assistant': typeof AssistantRoute
   '/design': typeof DesignRoute
+  '/login': typeof LoginRoute
   '/live/ai': typeof LiveAiRoute
   '/live/reports': typeof LiveReportsRoute
   '/plant/ai': typeof PlantAiRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/design': typeof DesignRoute
+  '/login': typeof LoginRoute
   '/live/ai': typeof LiveAiRoute
   '/live/reports': typeof LiveReportsRoute
   '/plant/ai': typeof PlantAiRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/sales': typeof SalesRouteRouteWithChildren
   '/assistant': typeof AssistantRoute
   '/design': typeof DesignRoute
+  '/login': typeof LoginRoute
   '/live/ai': typeof LiveAiRoute
   '/live/reports': typeof LiveReportsRoute
   '/plant/ai': typeof PlantAiRoute
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/sales'
     | '/assistant'
     | '/design'
+    | '/login'
     | '/live/ai'
     | '/live/reports'
     | '/plant/ai'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assistant'
     | '/design'
+    | '/login'
     | '/live/ai'
     | '/live/reports'
     | '/plant/ai'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/sales'
     | '/assistant'
     | '/design'
+    | '/login'
     | '/live/ai'
     | '/live/reports'
     | '/plant/ai'
@@ -208,10 +220,18 @@ export interface RootRouteChildren {
   SalesRouteRoute: typeof SalesRouteRouteWithChildren
   AssistantRoute: typeof AssistantRoute
   DesignRoute: typeof DesignRoute
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/design': {
       id: '/design'
       path: '/design'
@@ -375,6 +395,7 @@ const rootRouteChildren: RootRouteChildren = {
   SalesRouteRoute: SalesRouteRouteWithChildren,
   AssistantRoute: AssistantRoute,
   DesignRoute: DesignRoute,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,7 +1,7 @@
 import { Bell, KeyRound, LogOut, Menu, UserRound } from "lucide-react";
 import { useState } from "react";
 
-import { useCurrentUser } from "@/auth";
+import { signOut, useCurrentUser } from "@/auth";
 import { ThemeModePicker } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -130,11 +130,7 @@ export function AppMenu() {
         </div>
 
         <SheetFooter className="border-t">
-          <MenuLink
-            icon={<LogOut />}
-            destructive
-            onClick={() => toast.info("Sign-out will be wired to auth")}
-          >
+          <MenuLink icon={<LogOut />} destructive onClick={() => void signOut()}>
             Sign out
           </MenuLink>
         </SheetFooter>
