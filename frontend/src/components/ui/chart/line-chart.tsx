@@ -4,7 +4,11 @@ import { Line } from "react-chartjs-2";
 import { cartesianOptions } from "@/components/ui/chart/chart-options";
 import "@/components/ui/chart/chart-setup";
 import { useChartTheme } from "@/components/ui/chart/chart-theme";
-import { categoricalColor, withAlpha } from "@/components/ui/chart/chart-utils";
+import {
+  categoricalColor,
+  resolveChartColor,
+  withAlpha,
+} from "@/components/ui/chart/chart-utils";
 import type { ChartSeries } from "@/components/ui/chart/bar-chart";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +37,9 @@ function LineChart({
   const data = {
     labels,
     datasets: series.map((s, i) => {
-      const color = s.color ?? categoricalColor(theme, i);
+      const color = s.color
+        ? resolveChartColor(theme, s.color)
+        : categoricalColor(theme, i);
       return {
         label: s.label,
         data: s.data,

@@ -521,8 +521,8 @@ function DesignPage() {
       <Section title="Charts">
         <Muted>
           Chart.js + react-chartjs-2, themed to the 8-slot categorical palette validated
-          against both surfaces (see globals.css). Colors are assigned by fixed slot order
-          — never hand-picked per chart.
+          against both surfaces (see globals.css). Colors are assigned by fixed slot
+          order.
         </Muted>
         <div className="grid gap-4 lg:grid-cols-2">
           <ChartCard>
@@ -545,13 +545,16 @@ function DesignPage() {
             <ChartCardHeader>
               <div className="flex flex-col gap-1">
                 <ChartCardTitle>Fill rate trend</ChartCardTitle>
-                <ChartCardSubtitle>Area chart, single series</ChartCardSubtitle>
+                <ChartCardSubtitle>
+                  Area chart, single series, semantic color override
+                </ChartCardSubtitle>
               </div>
             </ChartCardHeader>
             <ChartCardContent>
+              {/* `color` accepts semantic tokens ("success", "chart-3", …) or literal colors */}
               <LineChart
                 labels={WEEKS}
-                series={[{ label: "Fill rate", data: FILL_RATE }]}
+                series={[{ label: "Fill rate", data: FILL_RATE, color: "success" }]}
                 area
               />
             </ChartCardContent>

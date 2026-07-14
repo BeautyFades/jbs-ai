@@ -4,8 +4,10 @@ export {
   categoricalColor,
   divergingColor,
   groupIntoOthers,
+  resolveChartColor,
   sequentialColor,
   withAlpha,
+  type ChartColor,
 } from "@/components/ui/chart/chart-utils";
 export { DoughnutChart } from "@/components/ui/chart/doughnut-chart";
 export { LineChart } from "@/components/ui/chart/line-chart";

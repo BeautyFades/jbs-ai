@@ -4,13 +4,18 @@ import { Scatter } from "react-chartjs-2";
 import { cartesianOptions } from "@/components/ui/chart/chart-options";
 import "@/components/ui/chart/chart-setup";
 import { useChartTheme } from "@/components/ui/chart/chart-theme";
-import { categoricalColor } from "@/components/ui/chart/chart-utils";
+import {
+  categoricalColor,
+  resolveChartColor,
+  type ChartColor,
+} from "@/components/ui/chart/chart-utils";
 import { cn } from "@/lib/utils";
 
 export interface ScatterSeries {
   label: string;
   data: { x: number; y: number }[];
-  color?: string;
+  /** Semantic token ("destructive", "chart-3", …) or literal CSS color. */
+  color?: ChartColor;
 }
 
 /** Scatter chart for correlating two measures across points (no line). */
@@ -30,7 +35,9 @@ function ScatterChart({
   const theme = useChartTheme();
   const data = {
     datasets: series.map((s, i) => {
-      const color = s.color ?? categoricalColor(theme, i);
+      const color = s.color
+        ? resolveChartColor(theme, s.color)
+        : categoricalColor(theme, i);
       return {
         label: s.label,
         data: s.data,

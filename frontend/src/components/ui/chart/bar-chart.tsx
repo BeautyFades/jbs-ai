@@ -4,16 +4,22 @@ import { Bar } from "react-chartjs-2";
 import { cartesianOptions } from "@/components/ui/chart/chart-options";
 import "@/components/ui/chart/chart-setup";
 import { useChartTheme } from "@/components/ui/chart/chart-theme";
-import { categoricalColor } from "@/components/ui/chart/chart-utils";
+import {
+  categoricalColor,
+  resolveChartColor,
+  type ChartColor,
+} from "@/components/ui/chart/chart-utils";
 import { cn } from "@/lib/utils";
 
 export interface ChartSeries {
   label: string;
   data: number[];
-  /** Override the automatic categorical color — reach for this only when
-   * the series carries status meaning (e.g. `var(--destructive)`), not to
-   * hand-pick an identity color. */
-  color?: string;
+  /** Override the automatic categorical color: a semantic token
+   * (`"destructive"`, `"success"`, `"chart-3"`, …) or any literal CSS
+   * color. Reach for this when the series carries status meaning or a
+   * fixed brand identity — not to freestyle a palette. Never `var(--x)`;
+   * it doesn't resolve on canvas. */
+  color?: ChartColor;
 }
 
 /**
@@ -41,7 +47,9 @@ function BarChart({
   const data = {
     labels,
     datasets: series.map((s, i) => {
-      const color = s.color ?? categoricalColor(theme, i);
+      const color = s.color
+        ? resolveChartColor(theme, s.color)
+        : categoricalColor(theme, i);
       return {
         label: s.label,
         data: s.data,

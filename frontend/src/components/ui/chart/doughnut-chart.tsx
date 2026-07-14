@@ -4,7 +4,11 @@ import { Doughnut } from "react-chartjs-2";
 import { radialOptions } from "@/components/ui/chart/chart-options";
 import "@/components/ui/chart/chart-setup";
 import { useChartTheme } from "@/components/ui/chart/chart-theme";
-import { categoricalColor } from "@/components/ui/chart/chart-utils";
+import {
+  categoricalColor,
+  resolveChartColor,
+  type ChartColor,
+} from "@/components/ui/chart/chart-utils";
 import { cn } from "@/lib/utils";
 
 /**
@@ -21,7 +25,9 @@ function DoughnutChart({
 }: {
   labels: string[];
   data: number[];
-  colors?: string[];
+  /** Per-slice override (parallel to `labels`) — semantic tokens or
+   * literal CSS colors; sparse entries fall back to the categorical slot. */
+  colors?: (ChartColor | undefined)[];
   centerLabel?: React.ReactNode;
   height?: number;
   className?: string;
@@ -32,7 +38,12 @@ function DoughnutChart({
     datasets: [
       {
         data,
-        backgroundColor: labels.map((_, i) => colors?.[i] ?? categoricalColor(theme, i)),
+        backgroundColor: labels.map((_, i) => {
+          const override = colors?.[i];
+          return override
+            ? resolveChartColor(theme, override)
+            : categoricalColor(theme, i);
+        }),
         borderColor: theme.surface,
         borderWidth: 2,
         hoverOffset: 6,
