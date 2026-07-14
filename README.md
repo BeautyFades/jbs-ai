@@ -1,4 +1,4 @@
-# JBS AI Control Tower — PoC
+# JBS AI Control Tower
 
 Proof of concept for a centralized analytics platform for JBS Foods: a **FastAPI** backend that hosts **MCP servers** (dbt + Snowflake) and runs a **Claude agent** that discovers dbt metadata, writes SQL, executes it on Snowflake, and streams a formatted answer to a **React (Vite)** chat UI.
 

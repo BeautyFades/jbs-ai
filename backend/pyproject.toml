@@ -1,7 +1,7 @@
 [project]
 name = "jbs-ai-backend"
 version = "0.1.0"
-description = "JBS AI Control Tower PoC — FastAPI MCP host + provider-agnostic agent"
+description = "JBS AI Control Tower"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115",

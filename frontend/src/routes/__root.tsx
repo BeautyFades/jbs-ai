@@ -89,9 +89,6 @@ function RootLayout() {
           <AppMenu />
           <Link to="/" className="flex items-baseline gap-2">
             <span className="font-semibold tracking-tight">JBS AI Control Tower</span>
-            <span className="hidden text-xs text-muted-foreground sm:inline">
-              dbt MCP · Snowflake MCP — PoC
-            </span>
           </Link>
           <nav className="ml-auto flex items-center gap-1">
             {navLinks.map((link) => (
