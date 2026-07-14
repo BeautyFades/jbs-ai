@@ -30,9 +30,8 @@ uv sync
 uv run uvicorn app.main:app --port 8000
 
 # Frontend (terminal 2)
-pnpm install                 # repo root: installs git hooks (husky)
 cd frontend
-pnpm install
+pnpm install                 # also installs git hooks (husky → repo-root .husky/)
 pnpm dev                     # http://localhost:5173 (proxies /api to :8000)
 ```
 

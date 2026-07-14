@@ -1,15 +1,18 @@
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .db import Base, engine
 from .db import models  # noqa: F401  (import for side effect: register tables)
 from .mcp_host import MCPHost
+from .modules.auth import require_user
+from .modules.auth import router as auth_router
 from .modules.chat import router as chat_router
 from .modules.platform import router as platform_router
+from .modules.towers.router import router as towers_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -43,8 +46,11 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # /api/health stays open for probes; everything else requires a user.
     app.include_router(platform_router)
-    app.include_router(chat_router)
+    app.include_router(auth_router)
+    app.include_router(towers_router)
+    app.include_router(chat_router, dependencies=[Depends(require_user)])
     return app
 
 

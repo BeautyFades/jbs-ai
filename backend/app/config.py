@@ -15,6 +15,14 @@ class Settings(BaseSettings):
     llm_provider: Literal["claude", "gemini", "openai", "local"] = "claude"
     mcp_mode: Literal["mock", "real"] = "mock"
 
+    # --- Auth ---
+    # "dev" injects a local user with the roles below; "entra" requires Azure
+    # EasyAuth headers (X-MS-CLIENT-PRINCIPAL) and rejects anonymous requests.
+    auth_mode: Literal["dev", "entra"] = "dev"
+    dev_user_email: str = "dev@jbs.com.br"
+    dev_user_name: str = "Dev User"
+    dev_user_roles: list[str] = ["admin"]
+
     # --- Operational database (PostgreSQL) ---
     # Points at the bundled compose Postgres by default; override DATABASE_URL
     # per environment. Async driver (asyncpg) is required.

@@ -2,8 +2,10 @@ import { createRootRoute, Link, Outlet, useNavigate } from "@tanstack/react-rout
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { useAiTool } from "@/ai/tool-registry";
+import { useCurrentUser } from "@/auth";
 import { AssistantDock } from "@/features/assistant";
 import { cn } from "@/lib/utils";
+import { TOWER_LIST } from "@/towers";
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -11,11 +13,13 @@ export const Route = createRootRoute({
 
 const NAV_LINKS = [
   { to: "/", label: "Home" },
+  ...TOWER_LIST.map((t) => ({ to: t.basePath, label: t.shortName })),
   { to: "/assistant", label: "AI Assistant" },
 ] as const;
 
 function RootLayout() {
   const navigate = useNavigate();
+  const { data: user } = useCurrentUser();
 
   // App-wide client tool: lets the agent move the user between modules.
   useAiTool({
@@ -58,6 +62,14 @@ function RootLayout() {
                 {link.label}
               </Link>
             ))}
+            {user && (
+              <span
+                className="ml-3 hidden max-w-40 truncate text-xs text-muted-foreground md:inline"
+                title={user.email}
+              >
+                {user.name}
+              </span>
+            )}
           </nav>
         </div>
       </header>

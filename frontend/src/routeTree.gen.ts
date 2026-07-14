@@ -10,11 +10,38 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AssistantRouteImport } from './routes/assistant'
+import { Route as SalesRouteRouteImport } from './routes/sales/route'
+import { Route as PlantRouteRouteImport } from './routes/plant/route'
+import { Route as LiveRouteRouteImport } from './routes/live/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SalesIndexRouteImport } from './routes/sales/index'
+import { Route as PlantIndexRouteImport } from './routes/plant/index'
+import { Route as LiveIndexRouteImport } from './routes/live/index'
+import { Route as SalesReportsRouteImport } from './routes/sales/reports'
+import { Route as SalesAiRouteImport } from './routes/sales/ai'
+import { Route as PlantReportsRouteImport } from './routes/plant/reports'
+import { Route as PlantAiRouteImport } from './routes/plant/ai'
+import { Route as LiveReportsRouteImport } from './routes/live/reports'
+import { Route as LiveAiRouteImport } from './routes/live/ai'
 
 const AssistantRoute = AssistantRouteImport.update({
   id: '/assistant',
   path: '/assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SalesRouteRoute = SalesRouteRouteImport.update({
+  id: '/sales',
+  path: '/sales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlantRouteRoute = PlantRouteRouteImport.update({
+  id: '/plant',
+  path: '/plant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LiveRouteRoute = LiveRouteRouteImport.update({
+  id: '/live',
+  path: '/live',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -22,30 +49,151 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SalesIndexRoute = SalesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SalesRouteRoute,
+} as any)
+const PlantIndexRoute = PlantIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PlantRouteRoute,
+} as any)
+const LiveIndexRoute = LiveIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LiveRouteRoute,
+} as any)
+const SalesReportsRoute = SalesReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => SalesRouteRoute,
+} as any)
+const SalesAiRoute = SalesAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => SalesRouteRoute,
+} as any)
+const PlantReportsRoute = PlantReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => PlantRouteRoute,
+} as any)
+const PlantAiRoute = PlantAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => PlantRouteRoute,
+} as any)
+const LiveReportsRoute = LiveReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => LiveRouteRoute,
+} as any)
+const LiveAiRoute = LiveAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => LiveRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/live': typeof LiveRouteRouteWithChildren
+  '/plant': typeof PlantRouteRouteWithChildren
+  '/sales': typeof SalesRouteRouteWithChildren
   '/assistant': typeof AssistantRoute
+  '/live/ai': typeof LiveAiRoute
+  '/live/reports': typeof LiveReportsRoute
+  '/plant/ai': typeof PlantAiRoute
+  '/plant/reports': typeof PlantReportsRoute
+  '/sales/ai': typeof SalesAiRoute
+  '/sales/reports': typeof SalesReportsRoute
+  '/live/': typeof LiveIndexRoute
+  '/plant/': typeof PlantIndexRoute
+  '/sales/': typeof SalesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
+  '/live/ai': typeof LiveAiRoute
+  '/live/reports': typeof LiveReportsRoute
+  '/plant/ai': typeof PlantAiRoute
+  '/plant/reports': typeof PlantReportsRoute
+  '/sales/ai': typeof SalesAiRoute
+  '/sales/reports': typeof SalesReportsRoute
+  '/live': typeof LiveIndexRoute
+  '/plant': typeof PlantIndexRoute
+  '/sales': typeof SalesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/live': typeof LiveRouteRouteWithChildren
+  '/plant': typeof PlantRouteRouteWithChildren
+  '/sales': typeof SalesRouteRouteWithChildren
   '/assistant': typeof AssistantRoute
+  '/live/ai': typeof LiveAiRoute
+  '/live/reports': typeof LiveReportsRoute
+  '/plant/ai': typeof PlantAiRoute
+  '/plant/reports': typeof PlantReportsRoute
+  '/sales/ai': typeof SalesAiRoute
+  '/sales/reports': typeof SalesReportsRoute
+  '/live/': typeof LiveIndexRoute
+  '/plant/': typeof PlantIndexRoute
+  '/sales/': typeof SalesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/assistant'
+  fullPaths:
+    | '/'
+    | '/live'
+    | '/plant'
+    | '/sales'
+    | '/assistant'
+    | '/live/ai'
+    | '/live/reports'
+    | '/plant/ai'
+    | '/plant/reports'
+    | '/sales/ai'
+    | '/sales/reports'
+    | '/live/'
+    | '/plant/'
+    | '/sales/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/assistant'
-  id: '__root__' | '/' | '/assistant'
+  to:
+    | '/'
+    | '/assistant'
+    | '/live/ai'
+    | '/live/reports'
+    | '/plant/ai'
+    | '/plant/reports'
+    | '/sales/ai'
+    | '/sales/reports'
+    | '/live'
+    | '/plant'
+    | '/sales'
+  id:
+    | '__root__'
+    | '/'
+    | '/live'
+    | '/plant'
+    | '/sales'
+    | '/assistant'
+    | '/live/ai'
+    | '/live/reports'
+    | '/plant/ai'
+    | '/plant/reports'
+    | '/sales/ai'
+    | '/sales/reports'
+    | '/live/'
+    | '/plant/'
+    | '/sales/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LiveRouteRoute: typeof LiveRouteRouteWithChildren
+  PlantRouteRoute: typeof PlantRouteRouteWithChildren
+  SalesRouteRoute: typeof SalesRouteRouteWithChildren
   AssistantRoute: typeof AssistantRoute
 }
 
@@ -58,6 +206,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sales': {
+      id: '/sales'
+      path: '/sales'
+      fullPath: '/sales'
+      preLoaderRoute: typeof SalesRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plant': {
+      id: '/plant'
+      path: '/plant'
+      fullPath: '/plant'
+      preLoaderRoute: typeof PlantRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/live': {
+      id: '/live'
+      path: '/live'
+      fullPath: '/live'
+      preLoaderRoute: typeof LiveRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -65,11 +234,125 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sales/': {
+      id: '/sales/'
+      path: '/'
+      fullPath: '/sales/'
+      preLoaderRoute: typeof SalesIndexRouteImport
+      parentRoute: typeof SalesRouteRoute
+    }
+    '/plant/': {
+      id: '/plant/'
+      path: '/'
+      fullPath: '/plant/'
+      preLoaderRoute: typeof PlantIndexRouteImport
+      parentRoute: typeof PlantRouteRoute
+    }
+    '/live/': {
+      id: '/live/'
+      path: '/'
+      fullPath: '/live/'
+      preLoaderRoute: typeof LiveIndexRouteImport
+      parentRoute: typeof LiveRouteRoute
+    }
+    '/sales/reports': {
+      id: '/sales/reports'
+      path: '/reports'
+      fullPath: '/sales/reports'
+      preLoaderRoute: typeof SalesReportsRouteImport
+      parentRoute: typeof SalesRouteRoute
+    }
+    '/sales/ai': {
+      id: '/sales/ai'
+      path: '/ai'
+      fullPath: '/sales/ai'
+      preLoaderRoute: typeof SalesAiRouteImport
+      parentRoute: typeof SalesRouteRoute
+    }
+    '/plant/reports': {
+      id: '/plant/reports'
+      path: '/reports'
+      fullPath: '/plant/reports'
+      preLoaderRoute: typeof PlantReportsRouteImport
+      parentRoute: typeof PlantRouteRoute
+    }
+    '/plant/ai': {
+      id: '/plant/ai'
+      path: '/ai'
+      fullPath: '/plant/ai'
+      preLoaderRoute: typeof PlantAiRouteImport
+      parentRoute: typeof PlantRouteRoute
+    }
+    '/live/reports': {
+      id: '/live/reports'
+      path: '/reports'
+      fullPath: '/live/reports'
+      preLoaderRoute: typeof LiveReportsRouteImport
+      parentRoute: typeof LiveRouteRoute
+    }
+    '/live/ai': {
+      id: '/live/ai'
+      path: '/ai'
+      fullPath: '/live/ai'
+      preLoaderRoute: typeof LiveAiRouteImport
+      parentRoute: typeof LiveRouteRoute
+    }
   }
 }
 
+interface LiveRouteRouteChildren {
+  LiveAiRoute: typeof LiveAiRoute
+  LiveReportsRoute: typeof LiveReportsRoute
+  LiveIndexRoute: typeof LiveIndexRoute
+}
+
+const LiveRouteRouteChildren: LiveRouteRouteChildren = {
+  LiveAiRoute: LiveAiRoute,
+  LiveReportsRoute: LiveReportsRoute,
+  LiveIndexRoute: LiveIndexRoute,
+}
+
+const LiveRouteRouteWithChildren = LiveRouteRoute._addFileChildren(
+  LiveRouteRouteChildren,
+)
+
+interface PlantRouteRouteChildren {
+  PlantAiRoute: typeof PlantAiRoute
+  PlantReportsRoute: typeof PlantReportsRoute
+  PlantIndexRoute: typeof PlantIndexRoute
+}
+
+const PlantRouteRouteChildren: PlantRouteRouteChildren = {
+  PlantAiRoute: PlantAiRoute,
+  PlantReportsRoute: PlantReportsRoute,
+  PlantIndexRoute: PlantIndexRoute,
+}
+
+const PlantRouteRouteWithChildren = PlantRouteRoute._addFileChildren(
+  PlantRouteRouteChildren,
+)
+
+interface SalesRouteRouteChildren {
+  SalesAiRoute: typeof SalesAiRoute
+  SalesReportsRoute: typeof SalesReportsRoute
+  SalesIndexRoute: typeof SalesIndexRoute
+}
+
+const SalesRouteRouteChildren: SalesRouteRouteChildren = {
+  SalesAiRoute: SalesAiRoute,
+  SalesReportsRoute: SalesReportsRoute,
+  SalesIndexRoute: SalesIndexRoute,
+}
+
+const SalesRouteRouteWithChildren = SalesRouteRoute._addFileChildren(
+  SalesRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LiveRouteRoute: LiveRouteRouteWithChildren,
+  PlantRouteRoute: PlantRouteRouteWithChildren,
+  SalesRouteRoute: SalesRouteRouteWithChildren,
   AssistantRoute: AssistantRoute,
 }
 export const routeTree = rootRouteImport
